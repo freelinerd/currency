@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency</title>
+    <link rel="shortcut icon" href="resources/icons/favico.ico.ico" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Conversor</h1>
+        </header>
+        
+        <main class="converter">
+            <div class="currency-input">
+                <label for="amount">Cantidad:</label>
+                <input type="number" id="amount" placeholder="Ingresa cantidad" required>
+            </div>
+            
+            <div class="currency-selector">
+                <label for="from-currency">De:</label>
+                <select id="from-currency">
+                </select>
+                
+                <label for="to-currency">A:</label>
+                <select id="to-currency">
+                </select>
+            </div>
+            
+            <button class="convert-btn">Convertir</button>
+            
+            <div class="result">
+                <p>Resultado: <span id="conversion-result">0.00</span></p>
+            </div>
+            
+            <div class="history-section">
+                <h2>Historial de Conversiones</h2>
+                <ul id="conversion-history">
+                </ul>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>By FreeLine ©2024 - Conversor de Divisas</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
