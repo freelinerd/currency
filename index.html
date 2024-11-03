@@ -1,51 +1,128 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="resources/icons/favicon.ico" type="image/x-icon">
     <title>Currency</title>
-    <link rel="shortcut icon" href="resources/icons/favico.ico.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="container">
-        <header class="header">
-            <h1>Conversor</h1>
+        <header class="navbar">
+            <img src="resources/bar-logo.png" alt="Logo" class="bar-logo">
         </header>
-        
-        <main class="converter">
-            <div class="currency-input">
-                <label for="amount">Cantidad:</label>
-                <input type="number" id="amount" placeholder="Ingresa cantidad" required>
+
+        <div class="ticker-container">
+            <div class="ticker" id="ticker">
+                <!-- Los elementos del ticker serán poblados por JavaScript -->
             </div>
-            
-            <div class="currency-selector">
-                <label for="from-currency">De:</label>
-                <select id="from-currency">
-                </select>
-                
-                <label for="to-currency">A:</label>
-                <select id="to-currency">
-                </select>
+        </div>
+
+        <section class="converter">
+            <div class="card-converter">
+                <h2>Convertidor de Divisas</h2>
+                <div class="input-group">
+                    <label>Monto</label>
+                    <input type="number" id="amount" min="0" step="0.01" value="1">
+                </div>
+                <div class="input-group">
+                    <label>De:</label>
+                    <select id="from-currency"></select>
+                </div>
+                <div class="input-group">
+                    <label>A:</label>
+                    <select id="to-currency"></select>
+                </div>
+                <button id="convert">Convertir</button>
+                <p id="result" style="margin-top: 1rem;"></p>
             </div>
-            
-            <button class="convert-btn">Convertir</button>
-            
-            <div class="result">
-                <p>Resultado: <span id="conversion-result">0.00</span></p>
+
+            <div class="card-market">
+                <h2>Análisis de Mercado</h2>
+                <div class="chart-container">
+                    <canvas id="trend-chart"></canvas>
+                </div>
             </div>
-            
-            <div class="history-section">
-                <h2>Historial de Conversiones</h2>
-                <ul id="conversion-history">
-                </ul>
+        </section>
+
+        <section class="trading-simulation">
+            <div class="card-container">
+                <div class="card" id="buy-card">
+                    <div class="card-front">
+                        <h2>Comprar Divisas</h2>
+                        <div class="input-group">
+                            <label>Monto</label>
+                            <input type="number" id="buy-amount" min="0" step="0.01">
+                        </div>
+                        <div class="input-group">
+                            <label>Divisa</label>
+                            <select id="buy-currency"></select>
+                        </div>
+                        <button id="proceed-buy" class="success">Proceder a Comprar</button>
+                        <p id="buy-result" style="margin-top: 1rem;"></p>
+                        <span class="flip-icon">↻</span>
+                    </div>
+                    <div class="card-back">
+                        <h2>Información de Pago</h2>
+                        <form class="payment-form">
+                            <input type="text" placeholder="Número de Tarjeta" pattern="[0-9\s]{13,19}">
+                            <div style="display: flex; gap: 1rem;">
+                                <input type="text" placeholder="MM/AA" pattern="[0-9]{2}/[0-9]{2}">
+                                <input type="text" placeholder="CVV" pattern="[0-9]{3,4}">
+                            </div>
+                            <input type="text" placeholder="Nombre del Titular">
+                            <button id="confirm-buy" class="success">Confirmar Compra</button>
+                        </form>
+                        <span class="flip-icon">↻</span>
+                    </div>
+                </div>
             </div>
-        </main>
-        
-        <footer class="footer">
-            <p>By FreeLine ©2024 - Conversor de Divisas</p>
+
+            <div class="card-container">
+                <div class="card" id="sell-card">
+                    <div class="card-front">
+                        <h2>Vender Divisas</h2>
+                        <div class="input-group">
+                            <label>Monto</label>
+                            <input type="number" id="sell-amount" min="0" step="0.01">
+                        </div>
+                        <div class="input-group">
+                            <label>Divisa</label>
+                            <select id="sell-currency"></select>
+                        </div>
+                        <button id="proceed-sell" class="danger">Proceder a Vender</button>
+                        <p id="sell-result" style="margin-top: 1rem;"></p>
+                        <span class="flip-icon">↻</span>
+                    </div>
+                    <div class="card-back">
+                        <h2>Información de Pago</h2>
+                        <form class="payment-form">
+                            <input type="text" placeholder="Número de Cuenta Bancaria">
+                            <input type="text" placeholder="Número de Ruta">
+                            <input type="text" placeholder="Nombre del Titular">
+                            <button id="confirm-sell" class="danger">Confirmar Venta</button>
+                        </form>
+                        <span class="flip-icon">↻</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2024 Currency by FreeLine. Todos los derechos reservados.</p>
+            <p>Contacto: <a href="mailto:info@simuladordivisas.com">info@freeline.com</a></p>
+            <p>
+                <a href="TÉRMINOS Y CONDICIONES DE USO.pdf">Términos de Uso</a> |
+                <a href="POLÍTICA DE PRIVACIDAD.pdf">Política de Privacidad</a>
+            </p>
         </footer>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>

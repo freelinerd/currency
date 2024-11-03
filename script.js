@@ -1,96 +1,150 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const fromCurrencySelect = document.getElementById('from-currency');
-    const toCurrencySelect = document.getElementById('to-currency');
-    const amountInput = document.getElementById('amount');
-    const resultElement = document.getElementById('conversion-result');
-    const convertButton = document.querySelector('.convert-btn');
-    const historyList = document.getElementById('conversion-history');
-    const apiKey = '936c66a0fb2b9236128fd1cf';
-    const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`;
-    const currenciesUrl = 'currencies.json';
+const API_KEY = '936c66a0fb2b9236128fd1cf';
+const BASE_URL = 'https://api.exchangerate-api.com/v4/latest/USD';
 
-    // Listamos las divisas
-    const currencies = [
-        { code: 'USD', name: 'Dólar Estadounidense' },
-        { code: 'EUR', name: 'Euro' },
-        { code: 'JPY', name: 'Yen Japonés' },
-        { code: 'GBP', name: 'Libra Esterlina' },
-        { code: 'AUD', name: 'Dólar Australiano' },
-        { code: 'CAD', name: 'Dólar Canadiense' },
-        { code: 'CHF', name: 'Franco Suizo' },
-        { code: 'CNY', name: 'Yuan Chino' },
-        { code: 'SEK', name: 'Corona Sueca' },
-        { code: 'NZD', name: 'Dólar Neozelandés' },
-        { code: 'DOP', name: 'Peso Dominicano'}
+let tasas = {};
+let saldo = 10000; // Saldo inicial en USD
 
-    ];
+// Obtener tasas de cambio
+async function obtenerTasas() {
+    try {
+        const respuesta = await fetch(BASE_URL);
+        const datos = await respuesta.json();
+        tasas = datos.rates;
+        llenarSelectsMonedas();
+        actualizarTicker();
+        inicializarGrafico();
+    } catch (error) {
+        console.error('Error al obtener las tasas:', error);
+    }
+}
 
-    // Agregamos las opciones a las listas desplegables
-    const populateCurrencySelect = (selectElement) => {
-        currencies.forEach(currency => {
-            const option = document.createElement('option');
-            option.value = currency.code;
-            option.textContent = `${currency.code} - ${currency.name}`;
-            selectElement.appendChild(option);
+// Llenar elementos select de moneda
+function llenarSelectsMonedas() {
+    const selects = ['from-currency', 'to-currency', 'buy-currency', 'sell-currency'];
+    selects.forEach(selectId => {
+        const select = document.getElementById(selectId);
+        select.innerHTML = '';
+        Object.keys(tasas).forEach(moneda => {
+            const opcion = document.createElement('option');
+            opcion.value = moneda;
+            opcion.textContent = moneda;
+            select.appendChild(opcion);
         });
-    };
+    });
+}
 
-    // Inicializamos las listas desplegables
-    populateCurrencySelect(fromCurrencySelect);
-    populateCurrencySelect(toCurrencySelect);
+// Actualizar ticker con tasas en tiempo real
+function actualizarTicker() {
+    const ticker = document.getElementById('ticker');
+    ticker.innerHTML = '';
+    Object.entries(tasas).forEach(([moneda, tasa]) => {
+        const item = document.createElement('div');
+        item.className = 'ticker-item';
+        item.textContent = `${moneda}: ${tasa.toFixed(4)}`;
+        ticker.appendChild(item);
+    });
+}
 
-    // Cargamos las tasas de cambio
-    const loadRates = async () => {
-        try {
-            const response = await fetch(apiUrl);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+// Inicializar gráfico
+function inicializarGrafico() {
+    const ctx = document.getElementById('trend-chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array.from({ length: 7 }, (_, i) => `Día ${i + 1}`),
+            datasets: [{
+                label: 'Tendencia de tasa de cambio',
+                data: Array.from({ length: 7 }, () => Math.random() * 2),
+                borderColor: '#0081dd',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#000000'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    ticks: { color: '#000000' }
+                },
+                x: {
+                    ticks: { color: '#000000' }
+                }
             }
-            const data = await response.json();
-            if (data.result === 'success') {
-                return data.conversion_rates;
-            } else {
-                throw new Error('Error en la respuesta de la API');
-            }
-        } catch (error) {
-            console.error('Error al obtener las tasas de cambio:', error);
-            resultElement.textContent = 'Error al obtener las tasas de cambio.';
         }
-    };
+    });
+}
 
-    // Realizamos la conversión de divisas
-    const convertCurrency = async () => {
-        const amount = parseFloat(amountInput.value);
-        const fromCurrency = fromCurrencySelect.value;
-        const toCurrency = toCurrencySelect.value;
+// Convertir moneda
+document.getElementById('convert').addEventListener('click', () => {
+    const cantidad = parseFloat(document.getElementById('amount').value);
+    const monedaDesde = document.getElementById('from-currency').value;
+    const monedaHasta = document.getElementById('to-currency').value;
 
-        if (isNaN(amount) || amount <= 0) {
-            resultElement.textContent = 'Por favor ingrese una cantidad válida.';
-            return;
-        }
-
-        try {
-            const rates = await loadRates();
-            const fromRate = rates[fromCurrency];
-            const toRate = rates[toCurrency];
-
-            if (fromRate && toRate) {
-                const convertedAmount = (amount / fromRate) * toRate;
-                resultElement.textContent = `${convertedAmount.toFixed(2)} ${toCurrency}`;
-                
-                // Agregamos los datos al historial
-                const listItem = document.createElement('li');
-                listItem.textContent = `${amount} ${fromCurrency} = ${convertedAmount.toFixed(2)} ${toCurrency}`;
-                historyList.appendChild(listItem);
-            } else {
-                resultElement.textContent = 'Error al obtener las tasas de cambio.';
-            }
-        } catch (error) {
-            console.error('Error al realizar la conversión:', error);
-            resultElement.textContent = 'Error al realizar la conversión.';
-        }
-    };
-
-    // Manejamos el evento de clic en el botón de conversión
-    convertButton.addEventListener('click', convertCurrency);
+    const resultado = cantidad * (tasas[monedaHasta] / tasas[monedaDesde]);
+    document.getElementById('result').textContent =
+        `${cantidad} ${monedaDesde} = ${resultado.toFixed(2)} ${monedaHasta}`;
 });
+
+// Añadir funcionalidad de flip en tarjetas
+document.querySelectorAll('.card').forEach(card => {
+    card.querySelectorAll('.flip-icon').forEach(icon => {
+        icon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            card.classList.toggle('flipped');
+        });
+    });
+});
+
+// Modificar controladores de compra para nuevo flujo de trabajo de flip en tarjeta
+document.getElementById('proceed-buy').addEventListener('click', () => {
+    const cantidad = parseFloat(document.getElementById('buy-amount').value);
+    const moneda = document.getElementById('buy-currency').value;
+    const costo = cantidad * tasas[moneda];
+
+    if (costo <= saldo) {
+        document.getElementById('buy-card').classList.add('flipped');
+    } else {
+        document.getElementById('buy-result').textContent =
+            'Balance insuficiente.';
+    }
+});
+
+document.getElementById('confirm-buy').addEventListener('click', (e) => {
+    e.preventDefault();
+    const cantidad = parseFloat(document.getElementById('buy-amount').value);
+    const moneda = document.getElementById('buy-currency').value;
+    const costo = cantidad * tasas[moneda];
+
+    saldo -= costo;
+    document.getElementById('buy-result').textContent =
+        `Compra realizada ${cantidad} ${moneda}. Balance: $${saldo.toFixed(2)}`;
+    document.getElementById('buy-card').classList.remove('flipped');
+});
+
+document.getElementById('proceed-sell').addEventListener('click', () => {
+    document.getElementById('sell-card').classList.add('flipped');
+});
+
+document.getElementById('confirm-sell').addEventListener('click', (e) => {
+    e.preventDefault();
+    const cantidad = parseFloat(document.getElementById('sell-amount').value);
+    const moneda = document.getElementById('sell-currency').value;
+    const valor = cantidad / tasas[moneda];
+
+    saldo += valor;
+    document.getElementById('sell-result').textContent =
+        `Venta realizada ${cantidad} ${moneda}. Balance: $${saldo.toFixed(2)}`;
+    document.getElementById('sell-card').classList.remove('flipped');
+});
+
+// Inicializar la aplicación
+obtenerTasas();
+
+// Actualizar tasas periódicamente
+setInterval(obtenerTasas, 60000); // Actualizar cada minuto
