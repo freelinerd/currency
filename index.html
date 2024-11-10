@@ -2,114 +2,205 @@
 <html lang="es">
 
 <head>
+    <base href="." />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="resources/icons/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="resources/favicon.ico" type="image/x-icon">
     <title>Currency</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
     <div class="container">
-        <header class="navbar">
-            <img src="resources/bar-logo.png" alt="Logo" class="bar-logo">
-        </header>
+        <div class="header-logo">
+            <div class="logo-placeholder"><img src="resources/bar-logo.png" alt="main-logo"></div>
+        </div>
 
-        <div class="ticker-container">
-            <div class="ticker" id="ticker">
-                <!-- Los elementos del ticker serán poblados por JavaScript -->
+        <nav class="nav-menu">
+            <a href="#inicio">Inicio</a>
+            <a href="#comprar" id="comprarBtn">Comprar</a>
+            <a href="#acerca">Acerca de</a>
+        </nav>
+
+        <div id="inicio" class="main-section">
+            <div class="card">
+                <h1>Conversor de Divisas</h1>
+                <div class="chart-container">
+                    <canvas id="ratesChart"></canvas>
+                </div>
+
+                <div class="time-periods">
+                    <button class="btn time-btn active" data-period="24h">24h</button>
+                    <button class="btn time-btn" data-period="1w">1 Semana</button>
+                    <button class="btn time-btn" data-period="1m">1 Mes</button>
+                    <button class="btn time-btn" data-period="1y">1 Año</button>
+                </div>
+
+                <div class="converter-section">
+                    <div class="conversion-controls">
+                        <div class="conversion-form">
+                            <div class="input-group">
+                                <label>Moneda de origen</label>
+                                <select id="fromCurrency">
+                                    <option value="USD">USD - Dólar Estadounidense</option>
+                                    <option value="ARS">ARS - Peso Argentino</option>
+                                    <option value="BOB">BOB - Peso Boliviano</option>
+                                    <option value="BRL">BRL - Real Brasileño</option>
+                                    <option value="CLP">CLP - Peso Chileno</option>
+                                    <option value="COP">COP - Peso Colombiano</option>
+                                    <option value="CRC">CRC - Colón Costarricense</option>
+                                    <option value="CUP">CUP - Peso Cubano</option>
+                                    <option value="DOP">DOP - Peso Dominicano</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                    <option value="GTQ">GTQ - Quetzal Guatemalteco</option>
+                                    <option value="HNL">HNL - Lempira Hondureño</option>
+                                    <option value="HTG">HTG - Gourde Haitiano</option>
+                                    <option value="JMD">JMD - Dólar Jamaiquino</option>
+                                    <option value="MXN">MXN - Peso Mexicano</option>
+                                    <option value="NIO">NIO - Córdoba Nicaragüense</option>
+                                    <option value="PAB">PAB - Balboa Panameño</option>
+                                    <option value="PEN">PEN - Sol Peruano</option>
+                                    <option value="PYG">PYG - Guaraní Paraguayo</option>
+                                    <option value="SVC">SVC - Colón Salvadoreño</option>
+                                    <option value="TTD">TTD - Dólar de Trinidad y Tobago</option>
+                                    <option value="UYU">UYU - Peso Uruguayo</option>
+                                    <option value="VES">VES - Bolívar Venezolano</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label>Moneda de destino</label>
+                                <select id="toCurrency">
+                                    <option value="USD">USD - Dólar Estadounidense</option>
+                                    <option value="ARS">ARS - Peso Argentino</option>
+                                    <option value="BOB">BOB - Peso Boliviano</option>
+                                    <option value="BRL">BRL - Real Brasileño</option>
+                                    <option value="CLP">CLP - Peso Chileno</option>
+                                    <option value="COP">COP - Peso Colombiano</option>
+                                    <option value="CRC">CRC - Colón Costarricense</option>
+                                    <option value="CUP">CUP - Peso Cubano</option>
+                                    <option value="DOP">DOP - Peso Dominicano</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                    <option value="GTQ">GTQ - Quetzal Guatemalteco</option>
+                                    <option value="HNL">HNL - Lempira Hondureño</option>
+                                    <option value="HTG">HTG - Gourde Haitiano</option>
+                                    <option value="JMD">JMD - Dólar Jamaiquino</option>
+                                    <option value="MXN">MXN - Peso Mexicano</option>
+                                    <option value="NIO">NIO - Córdoba Nicaragüense</option>
+                                    <option value="PAB">PAB - Balboa Panameño</option>
+                                    <option value="PEN">PEN - Sol Peruano</option>
+                                    <option value="PYG">PYG - Guaraní Paraguayo</option>
+                                    <option value="SVC">SVC - Colón Salvadoreño</option>
+                                    <option value="TTD">TTD - Dólar de Trinidad y Tobago</option>
+                                    <option value="UYU">UYU - Peso Uruguayo</option>
+                                    <option value="VES">VES - Bolívar Venezolano</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label>Cantidad</label>
+                                <input type="number" id="amount" min="0" step="0.01">
+                            </div>
+
+                            <button class="btn" id="convertBtn">Convertir</button>
+                        </div>
+
+                        <div class="result-section">
+                            <h2>Resultado</h2>
+                            <div id="result" class="card">
+                                <p>Resultado aparecerá aquí</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="history-section" id="historySection" style="display: none;">
+                    <h2>Historial</h2>
+                    <div id="history" class="history card">
+                    </div>
+                </div>
             </div>
         </div>
 
-        <section class="converter">
-            <div class="card-converter">
-                <h2>Convertidor de Divisas</h2>
+        <div id="comprar" class="main-section" style="display: none;">
+            <div class="card purchase-form" id="purchaseForm" style="display: none;">
+                <h2>Compra de Divisas</h2>
                 <div class="input-group">
-                    <label>Monto</label>
-                    <input type="number" id="amount" min="0" step="0.01" value="1">
+                    <label>Moneda a comprar</label>
+                    <select id="purchaseCurrency">
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="GBP">GBP</option>
+                    </select>
                 </div>
+
                 <div class="input-group">
-                    <label>De:</label>
-                    <select id="from-currency"></select>
+                    <label>Cantidad</label>
+                    <input type="number" id="purchaseAmount" min="0" step="0.01">
                 </div>
+
                 <div class="input-group">
-                    <label>A:</label>
-                    <select id="to-currency"></select>
+                    <label>Total estimado en tu moneda local</label>
+                    <div id="purchaseTotal" class="purchase-total"></div>
                 </div>
-                <button id="convert">Convertir</button>
-                <p id="result" style="margin-top: 1rem;"></p>
+
+                <button class="btn" id="nextToPaymentBtn">Siguiente</button>
             </div>
 
-            <div class="card-market">
-                <h2>Análisis de Mercado</h2>
-                <div class="chart-container">
-                    <canvas id="trend-chart"></canvas>
+            <div class="card payment-form" id="paymentForm">
+                <h2>Información de Pago</h2>
+                <div class="input-group">
+                    <label>Número de Tarjeta</label>
+                    <input type="text" id="cardNumber" maxlength="16" placeholder="1234 5678 9012 3456">
                 </div>
-            </div>
-        </section>
 
-        <section class="trading-simulation">
-            <div class="card-container">
-                <div class="card" id="buy-card">
-                    <div class="card-front">
-                        <h2>Comprar Divisas</h2>
-                        <div class="input-group">
-                            <label>Monto</label>
-                            <input type="number" id="buy-amount" min="0" step="0.01">
-                        </div>
-                        <div class="input-group">
-                            <label>Divisa</label>
-                            <select id="buy-currency"></select>
-                        </div>
-                        <button id="proceed-buy" class="success">Proceder a Comprar</button>
-                        <p id="buy-result" style="margin-top: 1rem;"></p>
-                        <span class="flip-icon">↻</span>
-                    </div>
-                    <div class="card-back">
-                        <h2>Información de Pago</h2>
-                        <form class="payment-form">
-                            <input type="text" placeholder="Número de Tarjeta" pattern="[0-9\s]{13,19}">
-                            <div style="display: flex; gap: 1rem;">
-                                <input type="text" placeholder="MM/AA" pattern="[0-9]{2}/[0-9]{2}">
-                                <input type="text" placeholder="CVV" pattern="[0-9]{3,4}">
-                            </div>
-                            <input type="text" placeholder="Nombre del Titular">
-                            <button id="confirm-buy" class="success">Confirmar Compra</button>
-                        </form>
-                        <span class="flip-icon">↻</span>
-                    </div>
+                <div class="input-group">
+                    <label>Fecha de Expiración</label>
+                    <input type="text" id="expDate" maxlength="5" placeholder="MM/YY">
                 </div>
-            </div>
 
-            <div class="card-container">
-                <div class="card" id="sell-card">
-                    <div class="card-front">
-                        <h2>Vender Divisas</h2>
-                        <div class="input-group">
-                            <label>Monto</label>
-                            <input type="number" id="sell-amount" min="0" step="0.01">
-                        </div>
-                        <div class="input-group">
-                            <label>Divisa</label>
-                            <select id="sell-currency"></select>
-                        </div>
-                        <button id="proceed-sell" class="danger">Proceder a Vender</button>
-                        <p id="sell-result" style="margin-top: 1rem;"></p>
-                        <span class="flip-icon">↻</span>
-                    </div>
-                    <div class="card-back">
-                        <h2>Información de Pago</h2>
-                        <form class="payment-form">
-                            <input type="text" placeholder="Número de Cuenta Bancaria">
-                            <input type="text" placeholder="Número de Ruta">
-                            <input type="text" placeholder="Nombre del Titular">
-                            <button id="confirm-sell" class="danger">Confirmar Venta</button>
-                        </form>
-                        <span class="flip-icon">↻</span>
-                    </div>
+                <div class="input-group">
+                    <label>CVV</label>
+                    <input type="text" id="cvv" maxlength="3" placeholder="123">
                 </div>
+
+                <button class="btn" id="processPaymentBtn">Procesar Pago</button>
             </div>
-        </section>
+        </div>
+
+        <div id="acerca" class="main-section" style="display: none;">
+            <div class="card">
+                <h1>Acerca de Currency</h1>
+                <p>Currency es una aplicación web integral que facilita a los usuarios la conversión, análisis y
+                    simulación de compra y venta de divisas de manera sencilla y confiable. Utilizamos datos en tiempo
+                    real a través de la API de ExchangeRate para proporcionar las tasas de cambio más actualizadas y
+                    precisas.</p>
+
+                <h2>Propósito y Origen</h2>
+                <p>Currency fue creada con el objetivo de hacer más accesible y eficiente la gestión de divisas para
+                    usuarios en Latinoamérica, brindando herramientas que les permitan realizar conversiones y analizar
+                    tendencias de mercado en un solo lugar. Inspirada en la creciente necesidad de información
+                    financiera confiable y fácil de usar, Currency busca ser una referencia de consulta y apoyo en la
+                    toma de decisiones sobre divisas.</p>
+
+                <h2>Características</h2>
+                <ul>
+                    <li>Conversión de múltiples divisas en tiempo real.</li>
+                    <li>Gráficos interactivos que muestran tendencias de mercado, actualizados constantemente.</li>
+                    <li>Historial de conversiones para seguimiento detallado.</li>
+                    <li>Simulación de compra y venta de divisas para una experiencia práctica y sin riesgos.</li>
+                    <li>Interfaz de usuario intuitiva y adaptativa, diseñada para dispositivos móviles y de escritorio.
+                    </li>
+                </ul>
+
+                <h2>Desarrollador y Propiedad</h2>
+                <p>Currency es propiedad de FreeLine, una empresa comprometida con el desarrollo de soluciones
+                    tecnológicas accesibles y eficientes. La aplicación fue desarrollada utilizando tecnologías web
+                    modernas como HTML5, CSS3 y JavaScript, y está diseñada para brindar una experiencia segura y
+                    confiable para todos sus usuarios.</p>
+            </div>
+        </div>
 
         <footer>
             <p>&copy; 2024 Currency by FreeLine. Todos los derechos reservados.</p>
@@ -121,7 +212,6 @@
         </footer>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
 </body>
 
